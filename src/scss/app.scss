@@ -2,3 +2,18 @@
 
 @import "bootstrap";
 @import "./base/reset";
+@import "./vendors/vendors";
+@import "./base/design/design";
+
+@import "./pages/single-page/single-page";
+
+@import "./partials/nav/nav";
+@import "./partials/baner/baner";
+@import "./partials/about/about";
+@import "./partials/footer/footer";
+@import "./partials/gallery/gallery";
+@import "./partials/contact/contact";
+@import "./partials/canoeing/canoeing";
+@import "./partials/district/district";
+@import "./partials/informant/informant";
+@import "./partials/accommodation/accommodation";

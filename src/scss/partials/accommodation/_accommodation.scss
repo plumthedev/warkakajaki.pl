@@ -1,0 +1,93 @@
+.accommodation{
+    height: 350px;
+
+    @include media-breakpoint-down(sm){
+        height: 250px;
+    }
+
+    &-container{
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        position: relative;
+        
+        &::before{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: $akka-black;
+            z-index: 99;
+            width: 100%;
+            height: 100%;
+            opacity: 0.6;
+        }
+    }
+
+    &-image{
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        object-position: bottom;
+        z-index: 9;
+
+    }
+
+    &-title{
+        font-size: 40px;
+        margin-bottom: 25px;
+        font-family: $paytoneOne-font-family;
+        color: $akka-white;
+        z-index: 999;
+
+        @include media-breakpoint-down(md){
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 32px;
+        }
+    }
+
+    &-text{
+        font-size: 24px;
+        margin-bottom: 25px;
+        line-height: 36px;
+        color: $akka-white;
+        text-align: center;
+        z-index: 999;
+
+        @include media-breakpoint-down(md){
+            margin-bottom: 15px;
+            font-size: 20px;
+            text-align: justify;
+            line-height: 32px;
+        }
+
+        @include media-breakpoint-down(sm){
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-align: justify;
+            line-height: 32px;
+        }
+    }
+
+    &-btn{
+        z-index: 999;
+        padding: 10px 45px;
+        border: solid 2px $akka-white;
+        color: $akka-white;
+
+        @include media-breakpoint-down(sm){
+            padding: 10px 25px;
+        }
+
+        &:hover{
+            background-color: $akka-white;
+            color: $akka-black;
+        }
+    }
+}

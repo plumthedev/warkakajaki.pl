@@ -1,0 +1,45 @@
+.footer{
+    padding-top: 25px;
+    padding-bottom: 25px;
+    background: $akka-white;
+    border-top: solid 2px $akka-dark-orange;
+    color: $akka-black;
+    font-family: $raleway-font-family;
+
+    @include media-breakpoint-down(sm){
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+
+    &-text{
+        font-size: 14px;
+    }
+
+    &-author{
+        text-align: right;
+
+        &-link{
+            color: $akka-black;
+            
+            &--award{
+                color: $akka-dark-orange;
+            }
+
+            &:hover{
+                transition: all ease .3s;
+                color: $akka-black;
+            }
+        }
+
+        @include media-breakpoint-down(sm){
+            margin-top: 15px;
+        }
+    }
+
+    &-owner,
+    &-author{
+        @include media-breakpoint-down(sm){
+            text-align: center;
+        }
+    }
+}

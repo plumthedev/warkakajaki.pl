@@ -1,0 +1,142 @@
+.navbar {
+    font-family: $raleway-font-family;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 99999;
+    background: transparent;
+    transition: all ease 0.3s;
+
+    &-sticky {
+        position: fixed !important;
+        animation: show-navbar ease .5s;
+    }
+
+    @include media-breakpoint-down(lg) {
+        position: unset;
+        background: $akka-black;
+    }
+
+    &-dark {
+        background-color: $akka-black;
+
+        .navbar {
+            &-toggler {
+                border: solid 2px $akka-dark-orange;
+
+                &-icon {
+                    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(255, 159, 26, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+                }
+            }
+
+            &-nav {
+                &-item {
+                    &-icon {
+                        color: $akka-dark-orange;
+                    }
+
+                    &-link {
+                        color: $akka-dark-orange;
+
+                        &:hover {
+                            color: $akka-dark-orange;
+                        }
+                    }
+
+                    &::after {
+                        background: $akka-dark-orange;
+                    }
+
+                    &:hover {
+                        color: $akka-light-orange;
+                    }
+                }
+            }
+        }
+
+    }
+
+    &-nav {
+        margin: 0 0 0 auto;
+
+        &-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            position: relative;
+
+            @include media-breakpoint-down(lg) {
+                margin-right: 0px;
+            }
+
+            &:last-child {
+                margin-right: none;
+            }
+
+            &-icon {
+                color: $akka-white;
+            }
+
+            &-link {
+                font-size: 16px;
+                color: $akka-white;
+                transition: all ease .3s;
+                padding: 8px 16px !important;
+                letter-spacing: .3px;
+
+                &:hover {
+                    color: $akka-white;
+                }
+            }
+
+            &::after {
+                content: '';
+                position: absolute;
+                height: 2px;
+                width: 0%;
+                background: $akka-white;
+                bottom: 0;
+                left: 0;
+                transition: all ease .3s;
+            }
+
+            @include media-breakpoint-down(lg) {
+                text-align: center;
+
+                &::after {
+                    display: none;
+                }
+            }
+
+            &:hover {
+                color: $akka-light-orange;
+
+                &::after {
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    &-toggler {
+        border: solid 2px $akka-dark-orange;
+
+        &-icon {
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(255, 159, 26, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+    }
+}
+
+@keyframes show-navbar {
+    from {
+        top: -150%;
+        left: 0;
+    }
+
+    to {
+        top: 0;
+        left: 0;
+    }
+}

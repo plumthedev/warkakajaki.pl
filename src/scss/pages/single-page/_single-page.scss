@@ -1,0 +1,61 @@
+.single-page {
+    &-content {
+        padding-top: 50px;
+        padding-bottom: 50px;
+        font-family: $raleway-font-family;
+
+        &--no-padding {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: $paytoneOne-font-family;
+            margin-bottom: 25px;
+        }
+
+        p {
+            font-size: 20px;
+            margin-bottom: 15px;
+            line-height: 36px;
+
+            &:last-child {
+                margin-bottom: 0px;
+            }
+
+            a {
+                color: $akka-light-orange;
+
+                &:hover {
+                    color: $akka-dark-orange;
+                }
+            }
+
+            @include media-breakpoint-down(sm){
+                text-align: justify;
+            }
+
+        }
+
+        ul {
+            list-style-type: initial;
+            margin-left: 20px;
+
+            li {
+                font-size: 18px;
+                margin-bottom: 10px;
+                line-height: 32px;
+
+            @include media-breakpoint-down(sm){
+                text-align: justify;
+            }
+            }
+        }
+    }
+}

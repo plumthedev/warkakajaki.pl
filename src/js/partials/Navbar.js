@@ -1,3 +1,15 @@
+/**
+ * Navbar.
+ * 
+ * Navbar slides in after 250px scroll from top.
+ * Also makes transparent when is on 0px.
+ *  
+ * Created with plumming love to code.
+ * 
+ * @version 1.0.0
+ * @author Kacper Pruszynski (plumthedev) <contact@kacperpruszynski.pl>
+*/
+
 import $ from "jquery";
 
 export default class Navbar {

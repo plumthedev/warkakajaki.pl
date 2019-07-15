@@ -38,8 +38,8 @@ gulp.task(
    gulp.series(
       clean,
       gulp.parallel(pages, javascript, images, copy),
-      sass
-      // styleGuide
+      sass,
+      serverConfigCopy
    )
 );
 
@@ -56,6 +56,10 @@ function clean(done) {
 // This task skips over the "img", "js", and "scss" folders, which are parsed separately
 function copy() {
    return gulp.src(PATHS.assets).pipe(gulp.dest(PATHS.dist + "/assets"));
+}
+
+function serverConfigCopy() {
+   return gulp.src(PATHS.serverConfig).pipe(gulp.dest(PATHS.dist));
 }
 
 // Copy page templates into finished HTML files

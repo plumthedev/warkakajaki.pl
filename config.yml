@@ -21,6 +21,8 @@ PATHS:
   assets:
     - "src/assets/**/*"
     - "!src/assets/{images}/**/*"
+  # Paths to server configuration files
+  serverConfig: "src/server/.htaccess"
   # Paths to Sass libraries, which can then be loaded with @import
   sass:
     - "node_modules/bootstrap/scss"

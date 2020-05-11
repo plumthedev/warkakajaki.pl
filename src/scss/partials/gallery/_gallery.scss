@@ -16,4 +16,16 @@
             font-size: 32px;
         }
     }
+
+    &-carousel{
+        .slick-slide{
+            min-height: 325px;
+            a > img{
+                display: block;
+                min-height: 325px;
+                object-fit: cover;
+                object-position: center;
+            }
+        }
+    }
 }

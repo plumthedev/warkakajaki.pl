@@ -20,6 +20,7 @@
     "jquery": "^3.5.0",
     "material-design-icons": "^3.0.1",
     "material-icons": "^0.3.1",
+    "node-sass": "^4.14.1",
     "popper.js": "^1.15.0",
     "what-input": "^5.2.3"
   },
@@ -39,7 +40,7 @@
     "gulp-extname": "^0.2.2",
     "gulp-htmlmin": "^5.0.1",
     "gulp-if": "^2.0.2",
-    "gulp-imagemin": "^6.0.0",
+    "gulp-imagemin": "^6.2.0",
     "gulp-load-plugins": "^2.0.0",
     "gulp-postcss": "^8.0.0",
     "gulp-sass": "^4.0.2",

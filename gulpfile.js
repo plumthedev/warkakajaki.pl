@@ -1,40 +1,35 @@
 "use strict";
 
-import plugins from "gulp-load-plugins";
-import yargs from "yargs";
-import browser from "browser-sync";
-import gulp from "gulp";
-import panini from "panini";
-import rimraf from "rimraf";
-import yaml from "js-yaml";
-import fs from "fs";
-import webpackStream from "webpack-stream";
-import webpack2 from "webpack";
-import named from "vinyl-named";
-import autoprefixer from "autoprefixer";
-import htmlmin from "gulp-htmlmin";
-import cleanCSS from "gulp-clean-css";
-import imagemin from 'gulp-imagemin';
-
-// import sherpa from "style-sherpa";
-// import uncss         from 'uncss';
-
-// Load all Gulp plugins into one variable
-const $ = plugins();
+const fs = require("fs");
+const gulp = require("gulp");
+const yargs = require("yargs/yargs");
+const { hideBin } = require("yargs/helpers");
+const browser = require("browser-sync").create();
+const panini = require("panini");
+const yaml = require("js-yaml");
+const webpack = require("webpack");
+const webpackStream = require("webpack-stream");
+const named = require("vinyl-named");
+const autoprefixer = require("autoprefixer");
+const postcss = require("gulp-postcss");
+const dartSass = require("sass");
+const gulpSass = require("gulp-sass")(dartSass);
+const cleanCss = require("gulp-clean-css");
+const htmlmin = require("gulp-htmlmin");
+const gulpIf = require("gulp-if");
 
 // Check for --production flag
-const PRODUCTION = !!yargs.argv.production;
+const PRODUCTION = !!yargs(hideBin(process.argv)).parseSync().production;
 
-// Load settings from settings.yml
-const {COMPATIBILITY, PORT, UNCSS_OPTIONS, PATHS} = loadConfig();
+// Load settings from config.yml
+const { PORT, PATHS } = loadConfig();
 
 function loadConfig() {
-    let ymlFile = fs.readFileSync("config.yml", "utf8");
+    const ymlFile = fs.readFileSync("config.yml", "utf8");
     return yaml.load(ymlFile);
 }
 
 // Build the "dist" folder by running all of the below tasks
-// Sass must be run later so UnCSS can search for used classes in the others assets.
 gulp.task(
     "build",
     gulp.series(
@@ -51,17 +46,17 @@ gulp.task("default", gulp.series("build", server, watch));
 // Delete the "dist" folder
 // This happens every time a build starts
 function clean(done) {
-    rimraf(PATHS.dist, done);
+    fs.rm(PATHS.dist, { recursive: true, force: true }, done);
 }
 
 // Copy files out of the assets folder
 // This task skips over the "img", "js", and "scss" folders, which are parsed separately
 function copy() {
-    return gulp.src(PATHS.assets).pipe(gulp.dest(PATHS.dist + "/assets"));
+    return gulp.src(PATHS.assets, { encoding: false }).pipe(gulp.dest(PATHS.dist + "/assets"));
 }
 
 function serverConfigCopy() {
-    return gulp.src(PATHS.serverConfig).pipe(gulp.dest(PATHS.dist));
+    return gulp.src(PATHS.serverConfig, { dot: true }).pipe(gulp.dest(PATHS.dist));
 }
 
 // Copy page templates into finished HTML files
@@ -78,9 +73,12 @@ function pages() {
             })
         )
         .pipe(
-            htmlmin({
-                collapseWhitespace: true
-            })
+            gulpIf(
+                PRODUCTION,
+                htmlmin({
+                    collapseWhitespace: true
+                })
+            )
         )
         .pipe(gulp.dest(PATHS.dist));
 }
@@ -91,46 +89,30 @@ function resetPages(done) {
     done();
 }
 
-// Generate a style guide from the Markdown content and HTML template in styleguide/
-function styleGuide(done) {
-    sherpa(
-        "src/styleguide/index.md",
-        {
-            output: PATHS.dist + "/styleguide.html",
-            template: "src/styleguide/template.html"
-        },
-        done
-    );
-}
-
 // Compile Sass into CSS
 // In production, the CSS is compressed
 function sass() {
-    const postCssPlugins = [
-        // Autoprefixer
-        autoprefixer({browsers: COMPATIBILITY})
-
-        // UnCSS - Uncomment to remove unused styles in production
-        // PRODUCTION && uncss.postcssPlugin(UNCSS_OPTIONS),
-    ].filter(Boolean);
-
     return gulp
-        .src("src/scss/app.scss")
-        .pipe($.sourcemaps.init())
+        .src("src/scss/app.scss", { sourcemaps: !PRODUCTION })
         .pipe(
-            $.sass({
-                includePaths: PATHS.sass
-            }).on("error", $.sass.logError)
+            gulpSass({
+                loadPaths: PATHS.sass,
+                quietDeps: true,
+                silenceDeprecations: [
+                    "import",
+                    "global-builtin",
+                    "color-functions",
+                    "slash-div"
+                ]
+            }).on("error", gulpSass.logError)
         )
-        .pipe($.postcss(postCssPlugins))
-        .pipe($.if(PRODUCTION, $.cleanCss({compatibility: "ie9"})))
-        .pipe($.if(!PRODUCTION, $.sourcemaps.write()))
-        .pipe(cleanCSS({compatibility: "ie8"}))
-        .pipe(gulp.dest(PATHS.dist + "/css"))
-        .pipe(browser.reload({stream: true}));
+        .pipe(postcss([autoprefixer()]))
+        .pipe(cleanCss({ compatibility: "ie9" }))
+        .pipe(gulp.dest(PATHS.dist + "/css", { sourcemaps: PRODUCTION ? false : "." }))
+        .pipe(browser.stream());
 }
 
-let webpackConfig = {
+const webpackConfig = {
     mode: PRODUCTION ? "production" : "development",
     module: {
         rules: [
@@ -146,40 +128,23 @@ let webpackConfig = {
             }
         ]
     },
-    devtool: !PRODUCTION && "source-map"
+    devtool: PRODUCTION ? false : "source-map"
 };
 
 // Combine JavaScript into one file
-// In production, the file is minified
+// In production, the file is minified by webpack
 function javascript() {
     return gulp
         .src(PATHS.entries)
         .pipe(named())
-        .pipe($.sourcemaps.init())
-        .pipe(webpackStream(webpackConfig, webpack2))
-        .pipe(
-            $.if(
-                PRODUCTION,
-                $.uglify().on("error", e => {
-                    console.log(e);
-                })
-            )
-        )
-        .pipe($.if(!PRODUCTION, $.sourcemaps.write()))
+        .pipe(webpackStream(webpackConfig, webpack))
         .pipe(gulp.dest(PATHS.dist + "/js"));
 }
 
 // Copy images to the "dist" folder
-// In production, the images are compressed
 function images() {
     return gulp
-        .src("src/assets/images/**/*")
-        .pipe(
-            $.if(
-                PRODUCTION,
-                imagemin()
-            )
-        )
+        .src("src/assets/images/**/*", { encoding: false })
         .pipe(gulp.dest(PATHS.dist + "/assets/images"));
 }
 
@@ -188,16 +153,11 @@ function server(done) {
     browser.init(
         {
             server: PATHS.dist,
-            port: PORT
+            port: PORT,
+            notify: false
         },
         done
     );
-}
-
-// Reload the browser with BrowserSync
-function reload(done) {
-    browser.reload();
-    done();
 }
 
 // Watch for changes to static assets, pages, Sass, and JavaScript
@@ -222,5 +182,4 @@ function watch() {
     gulp
         .watch("src/assets/images/**/*")
         .on("all", gulp.series(images, browser.reload));
-    // gulp.watch('src/styleguide/**').on('all', gulp.series(styleGuide, browser.reload));
 }
